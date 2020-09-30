@@ -1,6 +1,7 @@
 import 'dart:async';
-
 import 'package:meta/meta.dart';
+import 'package:fixnum/fixnum.dart' as $fixnum;
+
 
 import 'client.dart';
 import 'error.dart' as errors;
@@ -142,7 +143,8 @@ class SubscriptionImpl implements Subscription {
       final token = await _client.getToken(channel);
       final request = SubscribeRequest()
         ..channel = channel
-        ..token = token ?? '';
+        ..token = token ?? ''
+        ..recover = true;  //enable recovery message
 
       final result = await _client.sendMessage(request, SubscribeResult());
       final event = SubscribeSuccessEvent.from(result, isResubscribed);
