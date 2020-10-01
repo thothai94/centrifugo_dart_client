@@ -261,6 +261,7 @@ class ClientImpl implements Client, GeneratedMessageSender {
 
         final preferences = await SharedPreferences.getInstance();
         preferences.setString('offset-value-key', event.offset.toString());
+        print('get offset: ${event.offset}');
 
         final subscription = _subscriptions[push.channel];
         if (subscription != null) {

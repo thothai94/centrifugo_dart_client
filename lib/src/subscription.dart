@@ -145,6 +145,7 @@ class SubscriptionImpl implements Subscription {
       final preferences = await SharedPreferences.getInstance();
       final String offset = preferences.getString('offset-value-key') ?? "1";
       final int offsetNumber = int.parse(offset);
+      print('send offset: $offsetNumber - ${$fixnum.Int64(offsetNumber)}');
 
       final token = await _client.getToken(channel);
       final request = SubscribeRequest()
