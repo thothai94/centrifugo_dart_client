@@ -97,6 +97,7 @@ class PublishEvent {
 
   @override
   String toString() {
+
     return 'PublishEvent{'
         'uid: $uid, '
         'clientInfo: ${clientInfo.toProto3Json()}, '

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:centrifuge/src/transport.dart';
 import 'package:meta/meta.dart';
 import 'package:protobuf/protobuf.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'client_config.dart';
 import 'events.dart';
@@ -252,11 +253,15 @@ class ClientImpl implements Client, GeneratedMessageSender {
     }
   }
 
-  void _onPush(Push push) {
+  void _onPush(Push push) async {
     switch (push.type) {
       case PushType.PUBLICATION:
         final pub = Publication.fromBuffer(push.data);
         final event = PublishEvent.from(pub);
+
+        final preferences = await SharedPreferences.getInstance();
+        preferences.setString('offset-value-key', event.offset.toString());
+
         final subscription = _subscriptions[push.channel];
         if (subscription != null) {
           subscription.addPublish(event);

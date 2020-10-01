@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:fixnum/fixnum.dart' as $fixnum;
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 import 'client.dart';
@@ -140,11 +141,17 @@ class SubscriptionImpl implements Subscription {
 
   Future _resubscribe({@required bool isResubscribed}) async {
     try {
+
+      final preferences = await SharedPreferences.getInstance();
+      final String offset = preferences.getString('offset-value-key') ?? "1";
+      final int offsetNumber = int.parse(offset);
+
       final token = await _client.getToken(channel);
       final request = SubscribeRequest()
         ..channel = channel
         ..token = token ?? ''
-        ..recover = true;  //enable recovery message
+        ..recover = true
+        ..offset = $fixnum.Int64(offsetNumber);  //enable recovery message
 
       final result = await _client.sendMessage(request, SubscribeResult());
       final event = SubscribeSuccessEvent.from(result, isResubscribed);
