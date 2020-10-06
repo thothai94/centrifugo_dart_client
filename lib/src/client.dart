@@ -256,13 +256,12 @@ class ClientImpl implements Client, GeneratedMessageSender {
   void _onPush(Push push) async {
     switch (push.type) {
       case PushType.PUBLICATION:
-        print('------------------public-------------');
         final pub = Publication.fromBuffer(push.data);
         final event = PublishEvent.from(pub);
 
+        //store offset value into shared preference
         final preferences = await SharedPreferences.getInstance();
         preferences.setString('offset-value-key', event.offset.toString());
-        print('get offset: ${event.offset}');
 
         final subscription = _subscriptions[push.channel];
         if (subscription != null) {
@@ -270,7 +269,6 @@ class ClientImpl implements Client, GeneratedMessageSender {
         }
         break;
       case PushType.LEAVE:
-        print('------------------leave-------------');
         final leave = Leave.fromBuffer(push.data);
         final event = LeaveEvent.from(leave.info);
         final subscription = _subscriptions[push.channel];
@@ -279,8 +277,6 @@ class ClientImpl implements Client, GeneratedMessageSender {
         }
         break;
       case PushType.JOIN:
-        print('------------------join-------------');
-
         final join = Join.fromBuffer(push.data);
         final event = JoinEvent.from(join.info);
         final subscription = _subscriptions[push.channel];
@@ -289,14 +285,12 @@ class ClientImpl implements Client, GeneratedMessageSender {
         }
         break;
       case PushType.MESSAGE:
-        print('------------------message-------------');
         final message = Message.fromBuffer(push.data);
         final event = MessageEvent(message.data);
 
         _messageController.add(event);
         break;
       case PushType.UNSUB:
-        print('------------------unsub-------------');
         final event = UnsubscribeEvent();
         final subscription = _subscriptions[push.channel];
         if (subscription != null) {

@@ -3,7 +3,6 @@ import 'package:meta/meta.dart';
 import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 import 'client.dart';
 import 'error.dart' as errors;
 import 'events.dart';
@@ -141,18 +140,17 @@ class SubscriptionImpl implements Subscription {
 
   Future _resubscribe({@required bool isResubscribed}) async {
     try {
-
+      //get offset value from shared preference to subcribe
       final preferences = await SharedPreferences.getInstance();
       final String offset = preferences.getString('offset-value-key') ?? "1";
       final int offsetNumber = int.parse(offset);
-      print('send offset: $offsetNumber - ${$fixnum.Int64(offsetNumber)}');
 
       final token = await _client.getToken(channel);
       final request = SubscribeRequest()
         ..channel = channel
         ..token = token ?? ''
         ..recover = true
-        ..offset = $fixnum.Int64(offsetNumber);  //enable recovery message
+        ..offset = $fixnum.Int64(offsetNumber); //enable recovery message
 
       final result = await _client.sendMessage(request, SubscribeResult());
       final event = SubscribeSuccessEvent.from(result, isResubscribed);
@@ -170,9 +168,9 @@ class SubscriptionImpl implements Subscription {
 
   void _recover(SubscribeResult result) async {
 
+    //store offset value into shared preference when subcribe success
     final preferences = await SharedPreferences.getInstance();
-        preferences.setString('offset-value-key', result.offset.toString());
-        print('get offset from publications: ${result.offset}');
+    preferences.setString('offset-value-key', result.offset.toString());
 
     for (Publication publication in result.publications) {
       final event = PublishEvent.from(publication);
