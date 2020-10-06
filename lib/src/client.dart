@@ -280,6 +280,7 @@ class ClientImpl implements Client, GeneratedMessageSender {
         break;
       case PushType.JOIN:
         print('------------------join-------------');
+
         final join = Join.fromBuffer(push.data);
         final event = JoinEvent.from(join.info);
         final subscription = _subscriptions[push.channel];

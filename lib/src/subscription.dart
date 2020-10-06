@@ -168,7 +168,12 @@ class SubscriptionImpl implements Subscription {
     }
   }
 
-  void _recover(SubscribeResult result) {
+  void _recover(SubscribeResult result) async {
+
+    final preferences = await SharedPreferences.getInstance();
+        preferences.setString('offset-value-key', result.offset.toString());
+        print('get offset from publications: ${result.offset}');
+
     for (Publication publication in result.publications) {
       final event = PublishEvent.from(publication);
       addPublish(event);
